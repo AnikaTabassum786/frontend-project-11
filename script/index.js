@@ -1,32 +1,44 @@
 console.log('Index')
 
-function loadCategories(){
+function loadCategories() {
     fetch('https://openapi.programming-hero.com/api/phero-tube/categories')
-    .then(response=>response.json())
-    .then(data=>{
-        displayCategories(data.categories)
-    })
+        .then(response => response.json())
+        .then(data => {
+            displayCategories(data.categories)
+        })
 }
 
-function loadVideos(){
+function loadVideos() {
     fetch('https://openapi.programming-hero.com/api/phero-tube/videos')
+        .then(response => response.json())
+        .then(data => {
+            displayVideos(data.videos)
+        })
+}
+
+const loadCategoryVideos = (id) => {
+    // console.log(id)
+
+    const url= `https://openapi.programming-hero.com/api/phero-tube/category/${id}`
+
+    console.log(url)
+
+    fetch(url)
     .then(response=>response.json())
     .then(data=>{
-        displayVideos(data.videos)
+        displayVideos(data.category)
     })
 }
 
-function displayCategories(categories){
-    // console.log(categories)
+function displayCategories(categories) {
 
     const categoryContainer = document.getElementById('category-container')
-    for(let cat of categories){
-        // console.log(cat)
-    const categoryDiv = document.createElement('div')
-    categoryDiv.innerHTML=`
-    <button class="btn btn-sm hover:bg-[#FF1F3D] hover:text-white">${cat.category}</button>`
-    categoryContainer.appendChild(categoryDiv)
-}
+    for (let cat of categories) {
+        const categoryDiv = document.createElement('div')
+        categoryDiv.innerHTML = `
+    <button onclick=loadCategoryVideos(${cat.category_id}) class="btn btn-sm hover:bg-[#FF1F3D] hover:text-white">${cat.category}</button>`
+        categoryContainer.appendChild(categoryDiv)
+    }
 }
 // {
 //     "category_id": "1001",
@@ -46,13 +58,15 @@ function displayCategories(categories){
 //     },
 //     "description": "'Enchanted Harmonies' by Sophia Williams enchants listeners with its delicate, soothing sounds and melodic complexity. Garnering 7.6K views, this piece is perfect for those seeking an immersive musical experience that blends elegance with emotion, offering a unique soundscape that resonates deeply with its audience."
 // }
-const displayVideos=(videos)=>{
-//  console.log(videos)
-const videoContainer = document.getElementById('video-container')
-videos.forEach(video=>{
-     console.log(video)
-    const videoDiv = document.createElement('div')
-    videoDiv.innerHTML=`
+const displayVideos = (videos) => {
+    //  console.log(videos)
+    const videoContainer = document.getElementById('video-container')
+
+    videoContainer.innerHTML=''
+    videos.forEach(video => {
+        console.log(video)
+        const videoDiv = document.createElement('div')
+        videoDiv.innerHTML = `
   <div class="bg-base-100  ">
             <figure class="relative">
               <img class='w-full h-[150px] object-cover rounded-md'
@@ -80,10 +94,10 @@ videos.forEach(video=>{
         </div>
     `
 
-    videoContainer.appendChild(videoDiv)
-})
+        videoContainer.appendChild(videoDiv)
+    })
 
 }
 
 loadCategories()
-loadVideos()
+
