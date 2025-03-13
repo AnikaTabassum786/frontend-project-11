@@ -1,5 +1,13 @@
 console.log('Index')
 
+const removeActiveClass = () => {
+    const activeButtons = document.getElementsByClassName('active');
+    for (let btn of activeButtons) {
+        btn.classList.remove('active')
+    }
+    console.log(activeButtons)
+}
+
 function loadCategories() {
     fetch('https://openapi.programming-hero.com/api/phero-tube/categories')
         .then(response => response.json())
@@ -12,22 +20,25 @@ function loadVideos() {
     fetch('https://openapi.programming-hero.com/api/phero-tube/videos')
         .then(response => response.json())
         .then(data => {
+            removeActiveClass();
+            document.getElementById('btn-all').classList.add('active')
             displayVideos(data.videos)
         })
 }
 
 const loadCategoryVideos = (id) => {
     // console.log(id)
-
-    const url= `https://openapi.programming-hero.com/api/phero-tube/category/${id}`
-
+    const url = `https://openapi.programming-hero.com/api/phero-tube/category/${id}`
     console.log(url)
-
     fetch(url)
-    .then(response=>response.json())
-    .then(data=>{
-        displayVideos(data.category)
-    })
+        .then(response => response.json())
+        .then(data => {
+            removeActiveClass();
+            const clickedButton = document.getElementById(`btn-${id}`);
+            clickedButton.classList.add('active')
+            console.log(clickedButton)
+            displayVideos(data.category)
+        })
 }
 
 function displayCategories(categories) {
@@ -36,33 +47,27 @@ function displayCategories(categories) {
     for (let cat of categories) {
         const categoryDiv = document.createElement('div')
         categoryDiv.innerHTML = `
-    <button onclick=loadCategoryVideos(${cat.category_id}) class="btn btn-sm hover:bg-[#FF1F3D] hover:text-white">${cat.category}</button>`
+        <button id = 'btn-${cat.category_id}' onclick=loadCategoryVideos(${cat.category_id}) 
+        class="btn btn-sm hover:bg-[#FF1F3D] hover:text-white">${cat.category}</button>`
         categoryContainer.appendChild(categoryDiv)
     }
 }
-// {
-//     "category_id": "1001",
-//     "video_id": "aaal",
-//     "thumbnail": "https://i.ibb.co/hdtZYbB/enchnting.jpg",
-//     "title": "Enchanted Harmonies",
-//     "authors": [
-//         {
-//             "profile_picture": "https://i.ibb.co/jh1q2F3/shopia.jpg",
-//             "profile_name": "Sophia Williams",
-//             "verified": false
-//         }
-//     ],
-//     "others": {
-//         "views": "7.6K",
-//         "posted_date": "16450"
-//     },
-//     "description": "'Enchanted Harmonies' by Sophia Williams enchants listeners with its delicate, soothing sounds and melodic complexity. Garnering 7.6K views, this piece is perfect for those seeking an immersive musical experience that blends elegance with emotion, offering a unique soundscape that resonates deeply with its audience."
-// }
+
 const displayVideos = (videos) => {
     //  console.log(videos)
     const videoContainer = document.getElementById('video-container')
 
-    videoContainer.innerHTML=''
+    if (videos.length == 0) {
+        videoContainer.innerHTML = `
+         <div class="col-span-full flex flex-col justify-center items-center py-20">
+            <img class="w-[120px]" src="./assets/images/Icon.png" alt="">
+            <div class="font-bold text-3xl text-center">Oops!! Sorry, There is no content here</div>
+          </div>
+        `
+        return;
+    }
+
+    videoContainer.innerHTML = ''
     videos.forEach(video => {
         console.log(video)
         const videoDiv = document.createElement('div')
